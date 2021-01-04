@@ -1,0 +1,9 @@
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+.terraform/
+adcs-test-evironment-terraform.tfplan
+ansible/hosts
+ansible/vars/vars.yml.backup
+aws.pem
+terraform.tfstate
+terraform.tfstate.backup

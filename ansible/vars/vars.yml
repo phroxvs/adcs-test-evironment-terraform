@@ -1,0 +1,7 @@
+# Domain Controller
+windows_domain_controller_info:
+  dns_domain_name: pkitest.local
+  domain_admin_password: replace_domain_admin_password
+  domain_admin_user: Administrator@pkitest.local
+  safe_mode_password: replace_safe_mode_password
+  state: domain_controller

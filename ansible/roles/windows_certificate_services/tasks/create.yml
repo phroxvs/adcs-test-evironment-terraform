@@ -1,0 +1,15 @@
+- name: Install ADCS with sub features and management tools
+  win_feature:
+    name: Adcs-Cert-Authority
+    state: present
+    include_management_tools: yes
+  register: win_feature
+
+- name: reboot if installing Adcs-Cert-Authority feature requires it
+  win_reboot:
+  when: win_feature.reboot_required
+
+- name: Add ActiveDirectoryCSDsc
+  win_psmodule:
+    name: ActiveDirectoryCSDsc
+    state: present
