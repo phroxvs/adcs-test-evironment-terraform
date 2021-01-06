@@ -5,3 +5,4 @@ windows_domain_controller_info:
   domain_admin_user: Administrator@pkitest.local
   safe_mode_password: replace_safe_mode_password
   state: domain_controller
+  ip_address: replace_domain_controller_ip

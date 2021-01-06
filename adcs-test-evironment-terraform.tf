@@ -112,6 +112,12 @@ resource "aws_security_group" "allow_RDP" {
     protocol    = "tcp"
     cidr_blocks = [var.subnet1_address_space]
   }
+  ingress {
+    from_port   = 1
+    to_port     = 65535
+    protocol    = "udp"
+    cidr_blocks = [var.subnet1_address_space]
+  }
   egress {
     from_port   = 0
     to_port     = 0
@@ -159,11 +165,11 @@ EOF
   }
   provisioner "local-exec" {
     working_dir = "ansible"
-    command = " sleep 60; cp hosts.default hosts; sed -i 's/PUBLICIP/${aws_instance.domain-controller.public_ip}/g' hosts; sed -i 's/myTempPassword123/${rsadecrypt(aws_instance.domain-controller.password_data, file("aws.pem"))}/g' hosts; cp vars/vars.yml vars/vars.yml.backup; sed -i 's/replace_domain_admin_password/${rsadecrypt(aws_instance.domain-controller.password_data, file("aws.pem"))}/g' vars/vars.yml; sed -i 's/replace_safe_mode_password/${rsadecrypt(aws_instance.domain-controller.password_data, file("aws.pem"))}/g' vars/vars.yml; ansible-playbook -i hosts playbooks/windows_dc.yml; mv vars/vars.yml.backup vars/vars.yml"
+    command = "sleep 30; cp hosts.default hosts; sed -i 's/PUBLICIP/${aws_instance.domain-controller.public_ip}/g' hosts; sed -i 's/myTempPassword123/${replace(rsadecrypt(aws_instance.domain-controller.password_data, file("aws.pem")),"&","\\&")}/g' hosts; cp vars/vars.yml vars/vars.yml.backup; sed -i 's/replace_domain_admin_password/${rsadecrypt(aws_instance.domain-controller.password_data, file("aws.pem"))}/g' vars/vars.yml; sed -i 's/replace_safe_mode_password/${rsadecrypt(aws_instance.domain-controller.password_data, file("aws.pem"))}/g' vars/vars.yml; sed -i 's/replace_domain_controller_ip/${aws_instance.domain-controller.private_ip}/g' vars/vars.yml; ansible-playbook -i hosts playbooks/windows_dc.yml; mv vars/vars.yml.backup vars/vars.yml"
   }
     provisioner "remote-exec" {
     inline = [
-      "powershell.exe Install-AdcsCertificationAuthority -AllowAdministratorInteraction -CACommonName 'pkitest Root CA 1' -CADistinguishedNameSuffix 'DC=pkitest,DC=local' -CAType EnterpriseRootCa -CryptoProviderName 'RSA#Microsoft Software Key Storage Provider' -KeyLength 4096 -HashAlgorithmName SHA256 -ValidityPeriod Years -ValidityPeriodUnits 15 -Confirm -Force",
+      "powershell.exe \"Install-AdcsCertificationAuthority -AllowAdministratorInteraction -CACommonName 'pkitest Root CA 1' -CADistinguishedNameSuffix 'DC=pkitest,DC=local' -CAType EnterpriseRootCa -CryptoProviderName 'RSA#Microsoft Software Key Storage Provider' -KeyLength 4096 -HashAlgorithmName SHA256 -ValidityPeriod Years -ValidityPeriodUnits 15 -Confirm -Force\"",
     ]
 
     connection {
